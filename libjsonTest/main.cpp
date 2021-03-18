@@ -28,7 +28,7 @@ public:
     int getAge() { return age_; }
     float getTime() { return time_; }
     std::vector<std::shared_ptr<Person>>& getFriends() { return friends_; }
-    
+    ///////
 public:
     Person(const JSONNode& node)
     {
