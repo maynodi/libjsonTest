@@ -89,25 +89,6 @@ int main(int argc, const char * argv[]) {
     JSONNode::iterator iter = node.begin();
     while(node.end() != iter)
     {
-        if( JSON_ARRAY == iter->type())
-        {
-            if("친구" == iter->name())
-            {
-                JSONNode arrfriend = iter->as_array();
-                for(auto& arr : arrfriend)
-                {
-                    std::shared_ptr<Person> person_friend1 = std::make_shared<Person>();
-                    
-                    person_friend1->setName(arr.as_string());
-                    person_friend1->setAge(0);
-                    person_friend1->setSex("");
-                    person_friend1->setTime(0);
-                    
-                    person.addFriends(person_friend1);
-                }
-
-            }
-        }
         
         std::string nodeName = iter->name();
         
@@ -130,6 +111,8 @@ int main(int argc, const char * argv[]) {
         
         ++iter;
     }
+    
+    
     printf("%s\n", person.getName().c_str());
     printf("%d\n", person.getAge());
     printf("%s\n", person.getSex().c_str());
