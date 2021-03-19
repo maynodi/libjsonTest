@@ -13,6 +13,58 @@
 #include <vector>
 #include <string.h>
 
+class JsonUtils
+{
+public:
+    static int getInt(const std::string& key, const JSONNode& node, int defaultData = 0)
+    {
+        JSONNode::const_iterator it = node.find(key);
+        if(it == node.end())
+            return defaultData;
+        
+        int data = (int)it->as_int();
+        return data;
+    }
+    
+    static float getFloat(const std::string& key, const JSONNode& node, float defaultData = 0)
+    {
+        JSONNode::const_iterator it = node.find(key);
+        if(it == node.end())
+            return defaultData;
+        
+        float data = it->as_float();
+        return data;
+    }
+    
+    static std::string getString(const std::string& key, const JSONNode& node)
+    {
+        JSONNode::const_iterator it = node.find(key);
+        if(it == node.end())
+            return "";
+        
+        std::string data = it->as_string();
+        return data;
+    }
+    
+    template <typename T>
+    static std::vector<std::shared_ptr<T>> getArray(const std::string& key, const JSONNode& node)
+    {
+        std::vector<std::shared_ptr<T>> vecData;
+        
+        JSONNode::const_iterator it = node.find(key);
+        if(it == node.end())
+            return vecData;
+
+        for(auto iter = it->begin(); iter != it->end(); ++iter)
+        {
+            std::shared_ptr<T> ptr = std::make_shared<T>(*iter);
+            vecData.emplace_back(ptr);
+        }
+        
+        return vecData;
+    }
+};
+
 class Person
 {
 private:
@@ -32,45 +84,11 @@ public:
 public:
     Person(const JSONNode& node)
     {
-        name_ = (node.find("이름"))->as_string();
-        
-        if(node.end() != node.find("성별"))
-        {
-            sex_ = (node.find("성별"))->as_string();
-        }
-        else
-        {
-            sex_ = "";
-        }
-        
-        if(node.end() != node.find("나이"))
-        {
-            age_ = (int)(node.find("나이"))->as_int();
-        }
-        else
-        {
-            age_ = 0;
-        }
-        
-        if(node.end() != node.find("시간"))
-        {
-            time_ = (float)(node.find("시간"))->as_float();
-        }
-        else
-        {
-            age_ = 0.f;
-        }
-        
-        JSONNode::const_iterator nodeIter = node.find("친구");
-        if(node.end() != nodeIter)
-        {
-            JSONNode::const_iterator iter_begin = nodeIter->begin();
-            for(; iter_begin != nodeIter->end(); ++iter_begin)
-            {
-                std::shared_ptr<Person> ptr = std::make_shared<Person>(*iter_begin);
-                friends_.emplace_back(ptr);
-            }
-        }
+        name_ = JsonUtils::getString("이름", node);
+        sex_ = JsonUtils::getString("성별", node);
+        age_ = JsonUtils::getInt("나이", node);
+        time_ = JsonUtils::getFloat("시간", node);
+        friends_ = JsonUtils::getArray<Person>("친구", node);
     }
 
     ~Person(){};
@@ -99,6 +117,6 @@ int main(int argc, const char * argv[]) {
         printf("%s\n", vec->getName().c_str());
     }
     
-    std::cout << "Hello, World!\n";
+
     return 0;
 }
